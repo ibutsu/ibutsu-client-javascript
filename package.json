@@ -1,6 +1,6 @@
 {
   "name": "@ibutsu/client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A TypeScript client for the Ibutsu API",
   "license": "MIT",
   "main": "dist/index.js",
