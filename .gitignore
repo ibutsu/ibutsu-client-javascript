@@ -38,3 +38,5 @@ temp/
 .env
 .env.local
 .env.*.local
+
+openapi.yaml
