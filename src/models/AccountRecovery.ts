@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -49,8 +48,8 @@ export function AccountRecoveryFromJSONTyped(json: any, ignoreDiscriminator: boo
     };
 }
 
-export function AccountRecoveryToJSON(json: any): AccountRecovery {
-    return AccountRecoveryToJSONTyped(json, false);
+export function AccountRecoveryToJSON(value?: AccountRecovery | null): any {
+    return AccountRecoveryToJSONTyped(value, false);
 }
 
 export function AccountRecoveryToJSONTyped(value?: AccountRecovery | null, ignoreDiscriminator: boolean = false): any {

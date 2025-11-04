@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 import type { Pagination } from './Pagination';
 import {
     PaginationFromJSON,
@@ -70,8 +69,8 @@ export function ProjectListFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function ProjectListToJSON(json: any): ProjectList {
-    return ProjectListToJSONTyped(json, false);
+export function ProjectListToJSON(value?: ProjectList | null): any {
+    return ProjectListToJSONTyped(value, false);
 }
 
 export function ProjectListToJSONTyped(value?: ProjectList | null, ignoreDiscriminator: boolean = false): any {

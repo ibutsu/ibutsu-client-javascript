@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -62,8 +61,8 @@ export function WidgetParamFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function WidgetParamToJSON(json: any): WidgetParam {
-    return WidgetParamToJSONTyped(json, false);
+export function WidgetParamToJSON(value?: WidgetParam | null): any {
+    return WidgetParamToJSONTyped(value, false);
 }
 
 export function WidgetParamToJSONTyped(value?: WidgetParam | null, ignoreDiscriminator: boolean = false): any {

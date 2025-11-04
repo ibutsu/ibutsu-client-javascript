@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -83,8 +82,8 @@ export function LoginSupportFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function LoginSupportToJSON(json: any): LoginSupport {
-    return LoginSupportToJSONTyped(json, false);
+export function LoginSupportToJSON(value?: LoginSupport | null): any {
+    return LoginSupportToJSONTyped(value, false);
 }
 
 export function LoginSupportToJSONTyped(value?: LoginSupport | null, ignoreDiscriminator: boolean = false): any {

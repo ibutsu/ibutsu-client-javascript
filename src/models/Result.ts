@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -142,8 +141,8 @@ export function ResultFromJSONTyped(json: any, ignoreDiscriminator: boolean): Re
     };
 }
 
-export function ResultToJSON(json: any): Result {
-    return ResultToJSONTyped(json, false);
+export function ResultToJSON(value?: Result | null): any {
+    return ResultToJSONTyped(value, false);
 }
 
 export function ResultToJSONTyped(value?: Result | null, ignoreDiscriminator: boolean = false): any {

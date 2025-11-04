@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -69,8 +68,8 @@ export function PaginationFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function PaginationToJSON(json: any): Pagination {
-    return PaginationToJSONTyped(json, false);
+export function PaginationToJSON(value?: Pagination | null): any {
+    return PaginationToJSONTyped(value, false);
 }
 
 export function PaginationToJSONTyped(value?: Pagination | null, ignoreDiscriminator: boolean = false): any {

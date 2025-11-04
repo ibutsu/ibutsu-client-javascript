@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -55,8 +54,8 @@ export function LoginErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function LoginErrorToJSON(json: any): LoginError {
-    return LoginErrorToJSONTyped(json, false);
+export function LoginErrorToJSON(value?: LoginError | null): any {
+    return LoginErrorToJSONTyped(value, false);
 }
 
 export function LoginErrorToJSONTyped(value?: LoginError | null, ignoreDiscriminator: boolean = false): any {

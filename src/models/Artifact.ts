@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -83,8 +82,8 @@ export function ArtifactFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     };
 }
 
-export function ArtifactToJSON(json: any): Artifact {
-    return ArtifactToJSONTyped(json, false);
+export function ArtifactToJSON(value?: Artifact | null): any {
+    return ArtifactToJSONTyped(value, false);
 }
 
 export function ArtifactToJSONTyped(value?: Artifact | null, ignoreDiscriminator: boolean = false): any {

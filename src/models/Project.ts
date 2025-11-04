@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -76,8 +75,8 @@ export function ProjectFromJSONTyped(json: any, ignoreDiscriminator: boolean): P
     };
 }
 
-export function ProjectToJSON(json: any): Project {
-    return ProjectToJSONTyped(json, false);
+export function ProjectToJSON(value?: Project | null): any {
+    return ProjectToJSONTyped(value, false);
 }
 
 export function ProjectToJSONTyped(value?: Project | null, ignoreDiscriminator: boolean = false): any {

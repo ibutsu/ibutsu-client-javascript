@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -76,8 +75,8 @@ export function ImportFromJSONTyped(json: any, ignoreDiscriminator: boolean): Im
     };
 }
 
-export function ImportToJSON(json: any): Import {
-    return ImportToJSONTyped(json, false);
+export function ImportToJSON(value?: Import | null): any {
+    return ImportToJSONTyped(value, false);
 }
 
 export function ImportToJSONTyped(value?: Import | null, ignoreDiscriminator: boolean = false): any {

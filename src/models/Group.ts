@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -55,8 +54,8 @@ export function GroupFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gro
     };
 }
 
-export function GroupToJSON(json: any): Group {
-    return GroupToJSONTyped(json, false);
+export function GroupToJSON(value?: Group | null): any {
+    return GroupToJSONTyped(value, false);
 }
 
 export function GroupToJSONTyped(value?: Group | null, ignoreDiscriminator: boolean = false): any {

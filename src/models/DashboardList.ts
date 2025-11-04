@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 import type { Pagination } from './Pagination';
 import {
     PaginationFromJSON,
@@ -70,8 +69,8 @@ export function DashboardListFromJSONTyped(json: any, ignoreDiscriminator: boole
     };
 }
 
-export function DashboardListToJSON(json: any): DashboardList {
-    return DashboardListToJSONTyped(json, false);
+export function DashboardListToJSON(value?: DashboardList | null): any {
+    return DashboardListToJSONTyped(value, false);
 }
 
 export function DashboardListToJSONTyped(value?: DashboardList | null, ignoreDiscriminator: boolean = false): any {
