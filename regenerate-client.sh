@@ -202,7 +202,7 @@ if command -v npm >/dev/null 2>&1; then
     echo "Installing dependencies..."
     cd "${CLIENT_DIR}"
     npm install > /dev/null 2>&1 || echo "npm install had some issues, continuing..."
-    
+
     echo "Running code formatting and linting..."
     npm run format 2>&1 || echo "Formatting completed with some issues (normal for generated code)"
     npm run lint -- --fix 2>&1 || echo "Linting completed with some issues (normal for generated code)"
