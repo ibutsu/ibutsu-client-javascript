@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -57,8 +56,8 @@ export function AccountRegistrationFromJSONTyped(json: any, ignoreDiscriminator:
     };
 }
 
-export function AccountRegistrationToJSON(json: any): AccountRegistration {
-    return AccountRegistrationToJSONTyped(json, false);
+export function AccountRegistrationToJSON(value?: AccountRegistration | null): any {
+    return AccountRegistrationToJSONTyped(value, false);
 }
 
 export function AccountRegistrationToJSONTyped(value?: AccountRegistration | null, ignoreDiscriminator: boolean = false): any {

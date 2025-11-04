@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 import type { Group } from './Group';
 import {
     GroupFromJSON,
@@ -70,8 +69,8 @@ export function GroupListFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     };
 }
 
-export function GroupListToJSON(json: any): GroupList {
-    return GroupListToJSONTyped(json, false);
+export function GroupListToJSON(value?: GroupList | null): any {
+    return GroupListToJSONTyped(value, false);
 }
 
 export function GroupListToJSONTyped(value?: GroupList | null, ignoreDiscriminator: boolean = false): any {

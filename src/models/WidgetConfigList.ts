@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 import type { Pagination } from './Pagination';
 import {
     PaginationFromJSON,
@@ -70,8 +69,8 @@ export function WidgetConfigListFromJSONTyped(json: any, ignoreDiscriminator: bo
     };
 }
 
-export function WidgetConfigListToJSON(json: any): WidgetConfigList {
-    return WidgetConfigListToJSONTyped(json, false);
+export function WidgetConfigListToJSON(value?: WidgetConfigList | null): any {
+    return WidgetConfigListToJSONTyped(value, false);
 }
 
 export function WidgetConfigListToJSONTyped(value?: WidgetConfigList | null, ignoreDiscriminator: boolean = false): any {

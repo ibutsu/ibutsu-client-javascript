@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 import type { WidgetParam } from './WidgetParam';
 import {
     WidgetParamFromJSON,
@@ -84,8 +83,8 @@ export function WidgetTypeFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function WidgetTypeToJSON(json: any): WidgetType {
-    return WidgetTypeToJSONTyped(json, false);
+export function WidgetTypeToJSON(value?: WidgetType | null): any {
+    return WidgetTypeToJSONTyped(value, false);
 }
 
 export function WidgetTypeToJSONTyped(value?: WidgetType | null, ignoreDiscriminator: boolean = false): any {

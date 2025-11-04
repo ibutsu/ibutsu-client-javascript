@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -57,8 +56,8 @@ export function AccountResetFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function AccountResetToJSON(json: any): AccountReset {
-    return AccountResetToJSONTyped(json, false);
+export function AccountResetToJSON(value?: AccountReset | null): any {
+    return AccountResetToJSONTyped(value, false);
 }
 
 export function AccountResetToJSONTyped(value?: AccountReset | null, ignoreDiscriminator: boolean = false): any {

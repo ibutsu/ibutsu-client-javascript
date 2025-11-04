@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -57,8 +56,8 @@ export function CredentialsFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function CredentialsToJSON(json: any): Credentials {
-    return CredentialsToJSONTyped(json, false);
+export function CredentialsToJSON(value?: Credentials | null): any {
+    return CredentialsToJSONTyped(value, false);
 }
 
 export function CredentialsToJSONTyped(value?: Credentials | null, ignoreDiscriminator: boolean = false): any {

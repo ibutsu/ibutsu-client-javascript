@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -57,8 +56,8 @@ export function CreateTokenFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function CreateTokenToJSON(json: any): CreateToken {
-    return CreateTokenToJSONTyped(json, false);
+export function CreateTokenToJSON(value?: CreateToken | null): any {
+    return CreateTokenToJSONTyped(value, false);
 }
 
 export function CreateTokenToJSONTyped(value?: CreateToken | null, ignoreDiscriminator: boolean = false): any {

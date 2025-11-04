@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -55,8 +54,8 @@ export function HealthFromJSONTyped(json: any, ignoreDiscriminator: boolean): He
     };
 }
 
-export function HealthToJSON(json: any): Health {
-    return HealthToJSONTyped(json, false);
+export function HealthToJSON(value?: Health | null): any {
+    return HealthToJSONTyped(value, false);
 }
 
 export function HealthToJSONTyped(value?: Health | null, ignoreDiscriminator: boolean = false): any {

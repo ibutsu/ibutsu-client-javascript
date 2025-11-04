@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 import type { Pagination } from './Pagination';
 import {
     PaginationFromJSON,
@@ -70,8 +69,8 @@ export function RunListFromJSONTyped(json: any, ignoreDiscriminator: boolean): R
     };
 }
 
-export function RunListToJSON(json: any): RunList {
-    return RunListToJSONTyped(json, false);
+export function RunListToJSON(value?: RunList | null): any {
+    return RunListToJSONTyped(value, false);
 }
 
 export function RunListToJSONTyped(value?: RunList | null, ignoreDiscriminator: boolean = false): any {

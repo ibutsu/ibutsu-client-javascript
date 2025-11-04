@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 import type { Pagination } from './Pagination';
 import {
     PaginationFromJSON,
@@ -70,8 +69,8 @@ export function ArtifactListFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function ArtifactListToJSON(json: any): ArtifactList {
-    return ArtifactListToJSONTyped(json, false);
+export function ArtifactListToJSON(value?: ArtifactList | null): any {
+    return ArtifactListToJSONTyped(value, false);
 }
 
 export function ArtifactListToJSONTyped(value?: ArtifactList | null, ignoreDiscriminator: boolean = false): any {

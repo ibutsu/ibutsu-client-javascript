@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -48,8 +47,8 @@ export function UpdateRunFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     };
 }
 
-export function UpdateRunToJSON(json: any): UpdateRun {
-    return UpdateRunToJSONTyped(json, false);
+export function UpdateRunToJSON(value?: UpdateRun | null): any {
+    return UpdateRunToJSONTyped(value, false);
 }
 
 export function UpdateRunToJSONTyped(value?: UpdateRun | null, ignoreDiscriminator: boolean = false): any {

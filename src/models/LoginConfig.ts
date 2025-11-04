@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -62,8 +61,8 @@ export function LoginConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function LoginConfigToJSON(json: any): LoginConfig {
-    return LoginConfigToJSONTyped(json, false);
+export function LoginConfigToJSON(value?: LoginConfig | null): any {
+    return LoginConfigToJSONTyped(value, false);
 }
 
 export function LoginConfigToJSONTyped(value?: LoginConfig | null, ignoreDiscriminator: boolean = false): any {

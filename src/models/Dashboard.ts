@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -83,8 +82,8 @@ export function DashboardFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     };
 }
 
-export function DashboardToJSON(json: any): Dashboard {
-    return DashboardToJSONTyped(json, false);
+export function DashboardToJSON(value?: Dashboard | null): any {
+    return DashboardToJSONTyped(value, false);
 }
 
 export function DashboardToJSONTyped(value?: Dashboard | null, ignoreDiscriminator: boolean = false): any {
