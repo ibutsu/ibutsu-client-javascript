@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "outDir": ".",
+    "rootDir": ".",
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "esModuleInterop": true
+  },
+  "include": ["integration-test.ts"],
+  "exclude": ["node_modules", "dist", "test", "src"]
+}

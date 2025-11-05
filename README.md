@@ -67,13 +67,13 @@ then install it via:
 
 The library also works in the browser environment via npm and [browserify](http://browserify.org/). After following
 the above steps with Node.js and installing browserify with `npm install -g browserify`,
-perform the following (assuming *main.js* is your entry file):
+perform the following (assuming _main.js_ is your entry file):
 
 ```shell
 browserify main.js > bundle.js
 ```
 
-Then include *bundle.js* in the HTML pages.
+Then include _bundle.js_ in the HTML pages.
 
 ### Webpack Configuration
 
@@ -86,11 +86,53 @@ module: {
   rules: [
     {
       parser: {
-        amd: false
-      }
-    }
-  ]
+        amd: false,
+      },
+    },
+  ];
 }
+```
+
+## Integration Tests
+
+This project includes integration tests that validate the client against a real, running Ibutsu server.
+
+**Features:**
+- Uses native Node.js fetch (no external dependencies)
+- Tests health, result, run, and project endpoints
+- Handles SSL certificate issues in corporate environments
+- Reports HTTP status codes for all errors
+- Color-coded output for easy debugging
+
+Quick start:
+
+```bash
+# Set Node version
+nvm use 22
+
+# Set environment variables
+export IBUTSU_API="https://your-ibutsu-server.com/api"
+export IBUTSU_TOKEN="your-authentication-token"
+
+# For corporate environments with SSL issues:
+export NODE_TLS_REJECT_UNAUTHORIZED=0
+
+# Run integration tests
+yarn integration
+```
+
+Alternatively, you can copy and edit the environment file to manage your credentials:
+
+```bash
+# Copy and edit the environment file
+cp integration.env.example integration.env
+nano integration.env
+
+# Source the environment
+source integration.env
+
+# Run tests
+yarn integration
 ```
 
 ## Getting Started
@@ -100,102 +142,97 @@ Please follow the [installation](#installation) instruction and execute the foll
 ```javascript
 var ibutsu = require('@ibutsu/client');
 
-
-var api = new ibutsu.ArtifactApi()
-var id = "id_example"; // {String} ID of artifact to delete
-api.deleteArtifact(id).then(function() {
-  console.log('API called successfully.');
-}, function(error) {
-  console.error(error);
-});
-
-
+var api = new ibutsu.ArtifactApi();
+var id = 'id_example'; // {String} ID of artifact to delete
+api.deleteArtifact(id).then(
+  function () {
+    console.log('API called successfully.');
+  },
+  function (error) {
+    console.error(error);
+  }
+);
 ```
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost/api*
+All URIs are relative to _http://localhost/api_
 
-Class | Method | HTTP request | Description
------------- | ------------- | ------------- | -------------
-*ibutsu.ArtifactApi* | [**deleteArtifact**](docs/ArtifactApi.md#deleteArtifact) | **DELETE** /artifact/{id} | Delete an artifact
-*ibutsu.ArtifactApi* | [**downloadArtifact**](docs/ArtifactApi.md#downloadArtifact) | **GET** /artifact/{id}/download | Download an artifact
-*ibutsu.ArtifactApi* | [**getArtifact**](docs/ArtifactApi.md#getArtifact) | **GET** /artifact/{id} | Get a single artifact
-*ibutsu.ArtifactApi* | [**getArtifactList**](docs/ArtifactApi.md#getArtifactList) | **GET** /artifact | Get a (filtered) list of artifacts
-*ibutsu.ArtifactApi* | [**uploadArtifact**](docs/ArtifactApi.md#uploadArtifact) | **POST** /artifact | Uploads a test run artifact
-*ibutsu.ArtifactApi* | [**viewArtifact**](docs/ArtifactApi.md#viewArtifact) | **GET** /artifact/{id}/view | Stream an artifact directly to the client/browser
-*ibutsu.GroupApi* | [**addGroup**](docs/GroupApi.md#addGroup) | **POST** /group | Create a new group
-*ibutsu.GroupApi* | [**getGroup**](docs/GroupApi.md#getGroup) | **GET** /group/{id} | Get a group
-*ibutsu.GroupApi* | [**getGroupList**](docs/GroupApi.md#getGroupList) | **GET** /group | Get a list of groups
-*ibutsu.GroupApi* | [**updateGroup**](docs/GroupApi.md#updateGroup) | **PUT** /group/{id} | Update a group
-*ibutsu.HealthApi* | [**getDatabaseHealth**](docs/HealthApi.md#getDatabaseHealth) | **GET** /health/database | Get a health report for the database
-*ibutsu.HealthApi* | [**getHealth**](docs/HealthApi.md#getHealth) | **GET** /health | Get a general health report
-*ibutsu.HealthApi* | [**getHealthInfo**](docs/HealthApi.md#getHealthInfo) | **GET** /health/info | Get information about the server
-*ibutsu.ImportApi* | [**addImport**](docs/ImportApi.md#addImport) | **POST** /import | Import a file into Ibutsu. This can be either a JUnit XML file, or an Ibutsu archive
-*ibutsu.ImportApi* | [**getImport**](docs/ImportApi.md#getImport) | **GET** /import/{id} | Get the status of an import
-*ibutsu.ProjectApi* | [**addProject**](docs/ProjectApi.md#addProject) | **POST** /project | Create a project
-*ibutsu.ProjectApi* | [**getProject**](docs/ProjectApi.md#getProject) | **GET** /project/{id} | Get a single project by ID
-*ibutsu.ProjectApi* | [**getProjectList**](docs/ProjectApi.md#getProjectList) | **GET** /project | Get a list of projects
-*ibutsu.ProjectApi* | [**updateProject**](docs/ProjectApi.md#updateProject) | **PUT** /project/{id} | Update a project
-*ibutsu.ReportApi* | [**addReport**](docs/ReportApi.md#addReport) | **POST** /report | Create a new report
-*ibutsu.ReportApi* | [**deleteReport**](docs/ReportApi.md#deleteReport) | **DELETE** /report/{id} | Delete a report
-*ibutsu.ReportApi* | [**downloadReport**](docs/ReportApi.md#downloadReport) | **GET** /report/{id}/download/{filename} | Download a report
-*ibutsu.ReportApi* | [**getReport**](docs/ReportApi.md#getReport) | **GET** /report/{id} | Get a report
-*ibutsu.ReportApi* | [**getReportList**](docs/ReportApi.md#getReportList) | **GET** /report | Get a list of reports
-*ibutsu.ReportApi* | [**getReportTypes**](docs/ReportApi.md#getReportTypes) | **GET** /report/types | Get a list of report types
-*ibutsu.ReportApi* | [**viewReport**](docs/ReportApi.md#viewReport) | **GET** /report/{id}/view/{filename} | View a report
-*ibutsu.ResultApi* | [**addResult**](docs/ResultApi.md#addResult) | **POST** /result | Create a test result
-*ibutsu.ResultApi* | [**getResult**](docs/ResultApi.md#getResult) | **GET** /result/{id} | Get a single result
-*ibutsu.ResultApi* | [**getResultList**](docs/ResultApi.md#getResultList) | **GET** /result | Get the list of results.
-*ibutsu.ResultApi* | [**updateResult**](docs/ResultApi.md#updateResult) | **PUT** /result/{id} | Updates a single result
-*ibutsu.RunApi* | [**addRun**](docs/RunApi.md#addRun) | **POST** /run | Create a run
-*ibutsu.RunApi* | [**getRun**](docs/RunApi.md#getRun) | **GET** /run/{id} | Get a single run by ID
-*ibutsu.RunApi* | [**getRunList**](docs/RunApi.md#getRunList) | **GET** /run | Get a list of the test runs
-*ibutsu.RunApi* | [**updateRun**](docs/RunApi.md#updateRun) | **PUT** /run/{id} | Update a single run
-*ibutsu.WidgetApi* | [**getWidget**](docs/WidgetApi.md#getWidget) | **GET** /widget/{id} | Generate data for a dashboard widget
-*ibutsu.WidgetApi* | [**getWidgetTypes**](docs/WidgetApi.md#getWidgetTypes) | **GET** /widget/types | Get a list of widget types
-*ibutsu.WidgetConfigApi* | [**addWidgetConfig**](docs/WidgetConfigApi.md#addWidgetConfig) | **POST** /widget-config | Create a widget configuration
-*ibutsu.WidgetConfigApi* | [**deleteWidgetConfig**](docs/WidgetConfigApi.md#deleteWidgetConfig) | **DELETE** /widget-config/{id} | Delete a widget configuration
-*ibutsu.WidgetConfigApi* | [**getWidgetConfig**](docs/WidgetConfigApi.md#getWidgetConfig) | **GET** /widget-config/{id} | Get a single widget configuration
-*ibutsu.WidgetConfigApi* | [**getWidgetConfigList**](docs/WidgetConfigApi.md#getWidgetConfigList) | **GET** /widget-config | Get the list of widget configurations
-*ibutsu.WidgetConfigApi* | [**updateWidgetConfig**](docs/WidgetConfigApi.md#updateWidgetConfig) | **PUT** /widget-config/{id} | Updates a single widget configuration
-
+| Class                    | Method                                                                 | HTTP request                             | Description                                                                          |
+| ------------------------ | ---------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
+| _ibutsu.ArtifactApi_     | [**deleteArtifact**](docs/ArtifactApi.md#deleteArtifact)               | **DELETE** /artifact/{id}                | Delete an artifact                                                                   |
+| _ibutsu.ArtifactApi_     | [**downloadArtifact**](docs/ArtifactApi.md#downloadArtifact)           | **GET** /artifact/{id}/download          | Download an artifact                                                                 |
+| _ibutsu.ArtifactApi_     | [**getArtifact**](docs/ArtifactApi.md#getArtifact)                     | **GET** /artifact/{id}                   | Get a single artifact                                                                |
+| _ibutsu.ArtifactApi_     | [**getArtifactList**](docs/ArtifactApi.md#getArtifactList)             | **GET** /artifact                        | Get a (filtered) list of artifacts                                                   |
+| _ibutsu.ArtifactApi_     | [**uploadArtifact**](docs/ArtifactApi.md#uploadArtifact)               | **POST** /artifact                       | Uploads a test run artifact                                                          |
+| _ibutsu.ArtifactApi_     | [**viewArtifact**](docs/ArtifactApi.md#viewArtifact)                   | **GET** /artifact/{id}/view              | Stream an artifact directly to the client/browser                                    |
+| _ibutsu.GroupApi_        | [**addGroup**](docs/GroupApi.md#addGroup)                              | **POST** /group                          | Create a new group                                                                   |
+| _ibutsu.GroupApi_        | [**getGroup**](docs/GroupApi.md#getGroup)                              | **GET** /group/{id}                      | Get a group                                                                          |
+| _ibutsu.GroupApi_        | [**getGroupList**](docs/GroupApi.md#getGroupList)                      | **GET** /group                           | Get a list of groups                                                                 |
+| _ibutsu.GroupApi_        | [**updateGroup**](docs/GroupApi.md#updateGroup)                        | **PUT** /group/{id}                      | Update a group                                                                       |
+| _ibutsu.HealthApi_       | [**getDatabaseHealth**](docs/HealthApi.md#getDatabaseHealth)           | **GET** /health/database                 | Get a health report for the database                                                 |
+| _ibutsu.HealthApi_       | [**getHealth**](docs/HealthApi.md#getHealth)                           | **GET** /health                          | Get a general health report                                                          |
+| _ibutsu.HealthApi_       | [**getHealthInfo**](docs/HealthApi.md#getHealthInfo)                   | **GET** /health/info                     | Get information about the server                                                     |
+| _ibutsu.ImportApi_       | [**addImport**](docs/ImportApi.md#addImport)                           | **POST** /import                         | Import a file into Ibutsu. This can be either a JUnit XML file, or an Ibutsu archive |
+| _ibutsu.ImportApi_       | [**getImport**](docs/ImportApi.md#getImport)                           | **GET** /import/{id}                     | Get the status of an import                                                          |
+| _ibutsu.ProjectApi_      | [**addProject**](docs/ProjectApi.md#addProject)                        | **POST** /project                        | Create a project                                                                     |
+| _ibutsu.ProjectApi_      | [**getProject**](docs/ProjectApi.md#getProject)                        | **GET** /project/{id}                    | Get a single project by ID                                                           |
+| _ibutsu.ProjectApi_      | [**getProjectList**](docs/ProjectApi.md#getProjectList)                | **GET** /project                         | Get a list of projects                                                               |
+| _ibutsu.ProjectApi_      | [**updateProject**](docs/ProjectApi.md#updateProject)                  | **PUT** /project/{id}                    | Update a project                                                                     |
+| _ibutsu.ReportApi_       | [**addReport**](docs/ReportApi.md#addReport)                           | **POST** /report                         | Create a new report                                                                  |
+| _ibutsu.ReportApi_       | [**deleteReport**](docs/ReportApi.md#deleteReport)                     | **DELETE** /report/{id}                  | Delete a report                                                                      |
+| _ibutsu.ReportApi_       | [**downloadReport**](docs/ReportApi.md#downloadReport)                 | **GET** /report/{id}/download/{filename} | Download a report                                                                    |
+| _ibutsu.ReportApi_       | [**getReport**](docs/ReportApi.md#getReport)                           | **GET** /report/{id}                     | Get a report                                                                         |
+| _ibutsu.ReportApi_       | [**getReportList**](docs/ReportApi.md#getReportList)                   | **GET** /report                          | Get a list of reports                                                                |
+| _ibutsu.ReportApi_       | [**getReportTypes**](docs/ReportApi.md#getReportTypes)                 | **GET** /report/types                    | Get a list of report types                                                           |
+| _ibutsu.ReportApi_       | [**viewReport**](docs/ReportApi.md#viewReport)                         | **GET** /report/{id}/view/{filename}     | View a report                                                                        |
+| _ibutsu.ResultApi_       | [**addResult**](docs/ResultApi.md#addResult)                           | **POST** /result                         | Create a test result                                                                 |
+| _ibutsu.ResultApi_       | [**getResult**](docs/ResultApi.md#getResult)                           | **GET** /result/{id}                     | Get a single result                                                                  |
+| _ibutsu.ResultApi_       | [**getResultList**](docs/ResultApi.md#getResultList)                   | **GET** /result                          | Get the list of results.                                                             |
+| _ibutsu.ResultApi_       | [**updateResult**](docs/ResultApi.md#updateResult)                     | **PUT** /result/{id}                     | Updates a single result                                                              |
+| _ibutsu.RunApi_          | [**addRun**](docs/RunApi.md#addRun)                                    | **POST** /run                            | Create a run                                                                         |
+| _ibutsu.RunApi_          | [**getRun**](docs/RunApi.md#getRun)                                    | **GET** /run/{id}                        | Get a single run by ID                                                               |
+| _ibutsu.RunApi_          | [**getRunList**](docs/RunApi.md#getRunList)                            | **GET** /run                             | Get a list of the test runs                                                          |
+| _ibutsu.RunApi_          | [**updateRun**](docs/RunApi.md#updateRun)                              | **PUT** /run/{id}                        | Update a single run                                                                  |
+| _ibutsu.WidgetApi_       | [**getWidget**](docs/WidgetApi.md#getWidget)                           | **GET** /widget/{id}                     | Generate data for a dashboard widget                                                 |
+| _ibutsu.WidgetApi_       | [**getWidgetTypes**](docs/WidgetApi.md#getWidgetTypes)                 | **GET** /widget/types                    | Get a list of widget types                                                           |
+| _ibutsu.WidgetConfigApi_ | [**addWidgetConfig**](docs/WidgetConfigApi.md#addWidgetConfig)         | **POST** /widget-config                  | Create a widget configuration                                                        |
+| _ibutsu.WidgetConfigApi_ | [**deleteWidgetConfig**](docs/WidgetConfigApi.md#deleteWidgetConfig)   | **DELETE** /widget-config/{id}           | Delete a widget configuration                                                        |
+| _ibutsu.WidgetConfigApi_ | [**getWidgetConfig**](docs/WidgetConfigApi.md#getWidgetConfig)         | **GET** /widget-config/{id}              | Get a single widget configuration                                                    |
+| _ibutsu.WidgetConfigApi_ | [**getWidgetConfigList**](docs/WidgetConfigApi.md#getWidgetConfigList) | **GET** /widget-config                   | Get the list of widget configurations                                                |
+| _ibutsu.WidgetConfigApi_ | [**updateWidgetConfig**](docs/WidgetConfigApi.md#updateWidgetConfig)   | **PUT** /widget-config/{id}              | Updates a single widget configuration                                                |
 
 ## Documentation for Models
 
- - [ibutsu.Artifact](docs/Artifact.md)
- - [ibutsu.ArtifactList](docs/ArtifactList.md)
- - [ibutsu.Group](docs/Group.md)
- - [ibutsu.GroupList](docs/GroupList.md)
- - [ibutsu.Health](docs/Health.md)
- - [ibutsu.HealthInfo](docs/HealthInfo.md)
- - [ibutsu.InlineObject](docs/InlineObject.md)
- - [ibutsu.InlineObject1](docs/InlineObject1.md)
- - [ibutsu.InlineResponse200](docs/InlineResponse200.md)
- - [ibutsu.ModelImport](docs/ModelImport.md)
- - [ibutsu.Pagination](docs/Pagination.md)
- - [ibutsu.Project](docs/Project.md)
- - [ibutsu.ProjectList](docs/ProjectList.md)
- - [ibutsu.Report](docs/Report.md)
- - [ibutsu.ReportList](docs/ReportList.md)
- - [ibutsu.ReportParameters](docs/ReportParameters.md)
- - [ibutsu.Result](docs/Result.md)
- - [ibutsu.ResultList](docs/ResultList.md)
- - [ibutsu.Run](docs/Run.md)
- - [ibutsu.RunList](docs/RunList.md)
- - [ibutsu.WidgetConfig](docs/WidgetConfig.md)
- - [ibutsu.WidgetConfigList](docs/WidgetConfigList.md)
- - [ibutsu.WidgetParam](docs/WidgetParam.md)
- - [ibutsu.WidgetType](docs/WidgetType.md)
- - [ibutsu.WidgetTypeList](docs/WidgetTypeList.md)
-
+- [ibutsu.Artifact](docs/Artifact.md)
+- [ibutsu.ArtifactList](docs/ArtifactList.md)
+- [ibutsu.Group](docs/Group.md)
+- [ibutsu.GroupList](docs/GroupList.md)
+- [ibutsu.Health](docs/Health.md)
+- [ibutsu.HealthInfo](docs/HealthInfo.md)
+- [ibutsu.InlineObject](docs/InlineObject.md)
+- [ibutsu.InlineObject1](docs/InlineObject1.md)
+- [ibutsu.InlineResponse200](docs/InlineResponse200.md)
+- [ibutsu.ModelImport](docs/ModelImport.md)
+- [ibutsu.Pagination](docs/Pagination.md)
+- [ibutsu.Project](docs/Project.md)
+- [ibutsu.ProjectList](docs/ProjectList.md)
+- [ibutsu.Report](docs/Report.md)
+- [ibutsu.ReportList](docs/ReportList.md)
+- [ibutsu.ReportParameters](docs/ReportParameters.md)
+- [ibutsu.Result](docs/Result.md)
+- [ibutsu.ResultList](docs/ResultList.md)
+- [ibutsu.Run](docs/Run.md)
+- [ibutsu.RunList](docs/RunList.md)
+- [ibutsu.WidgetConfig](docs/WidgetConfig.md)
+- [ibutsu.WidgetConfigList](docs/WidgetConfigList.md)
+- [ibutsu.WidgetParam](docs/WidgetParam.md)
+- [ibutsu.WidgetType](docs/WidgetType.md)
+- [ibutsu.WidgetTypeList](docs/WidgetTypeList.md)
 
 ## Documentation for Authorization
 
-
-
 ### api_key
-
 
 - **Type**: API key
 - **API key parameter name**: api_key

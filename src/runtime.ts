@@ -487,3 +487,12 @@ export class TextApiResponse {
     return await this.raw.text();
   }
 }
+
+/**
+ * Converts an object to JSON format
+ * @param value - The value to convert
+ * @returns The JSON representation of the value
+ */
+export function objectToJSON(value: any): any {
+  return value;
+}
