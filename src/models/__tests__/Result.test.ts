@@ -1,5 +1,5 @@
 import {
-  Result,
+  type Result,
   ResultResultEnum,
   ResultFromJSON,
   ResultToJSON,
@@ -146,7 +146,23 @@ describe('Result Model', () => {
         metadata: { browser: 'chrome' },
       };
 
-      const json = ResultToJSON(result);
+      const json: {
+        id?: string;
+        test_id?: string;
+        start_time?: string;
+        duration?: number;
+        result?: string;
+        run_id?: string;
+        project_id?: string;
+      } = ResultToJSON(result) as {
+        id?: string;
+        test_id?: string;
+        start_time?: string;
+        duration?: number;
+        result?: string;
+        run_id?: string;
+        project_id?: string;
+      };
 
       expect(json.id).toBe('result-123');
       expect(json.test_id).toBe('test-456');
@@ -162,19 +178,22 @@ describe('Result Model', () => {
         id: 'result-123',
       };
 
-      const json = ResultToJSON(result);
+      const json: { id?: string; test_id?: string } = ResultToJSON(result) as {
+        id?: string;
+        test_id?: string;
+      };
 
       expect(json.id).toBe('result-123');
       expect(json.test_id).toBeUndefined();
     });
 
     it('should return null when passed null', () => {
-      const json = ResultToJSON(null);
+      const json: unknown = ResultToJSON(null);
       expect(json).toBeNull();
     });
 
     it('should return undefined when passed undefined', () => {
-      const json = ResultToJSON(undefined);
+      const json: unknown = ResultToJSON(undefined);
       expect(json).toBeUndefined();
     });
   });
@@ -209,11 +228,10 @@ describe('Result Model', () => {
         source: 'pytest',
       };
 
-      const json = ResultToJSON(original);
-      const restored = ResultFromJSON(json);
+      const json: unknown = ResultToJSON(original);
+      const restored: Result = ResultFromJSON(json);
 
       expect(restored).toEqual(original);
     });
   });
 });
-

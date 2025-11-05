@@ -1,4 +1,4 @@
-import { Run, RunFromJSON, RunToJSON, instanceOfRun } from '../Run';
+import { type Run, RunFromJSON, RunToJSON, instanceOfRun } from '../Run';
 
 describe('Run Model', () => {
   describe('interface and types', () => {
@@ -134,7 +134,19 @@ describe('Run Model', () => {
         metadata: { build: '1234' },
       };
 
-      const json = RunToJSON(run);
+      const json: {
+        id?: string;
+        created?: string;
+        start_time?: string;
+        project_id?: string;
+        summary?: Record<string, number>;
+      } = RunToJSON(run) as {
+        id?: string;
+        created?: string;
+        start_time?: string;
+        project_id?: string;
+        summary?: Record<string, number>;
+      };
 
       expect(json.id).toBe('run-123');
       expect(json.created).toBe('2024-01-01T00:00:00Z');
@@ -148,19 +160,22 @@ describe('Run Model', () => {
         id: 'run-123',
       };
 
-      const json = RunToJSON(run);
+      const json: { id?: string; duration?: number } = RunToJSON(run) as {
+        id?: string;
+        duration?: number;
+      };
 
       expect(json.id).toBe('run-123');
       expect(json.duration).toBeUndefined();
     });
 
     it('should return null when passed null', () => {
-      const json = RunToJSON(null);
+      const json: unknown = RunToJSON(null);
       expect(json).toBeNull();
     });
 
     it('should return undefined when passed undefined', () => {
-      const json = RunToJSON(undefined);
+      const json: unknown = RunToJSON(undefined);
       expect(json).toBeUndefined();
     });
   });
@@ -200,8 +215,8 @@ describe('Run Model', () => {
         },
       };
 
-      const json = RunToJSON(original);
-      const restored = RunFromJSON(json);
+      const json: unknown = RunToJSON(original);
+      const restored: Run = RunFromJSON(json);
 
       expect(restored).toEqual(original);
     });
@@ -218,11 +233,10 @@ describe('Run Model', () => {
         },
       };
 
-      const json = RunToJSON(original);
-      const restored = RunFromJSON(json);
+      const json: unknown = RunToJSON(original);
+      const restored: Run = RunFromJSON(json);
 
       expect(restored.summary).toEqual(original.summary);
     });
   });
 });
-

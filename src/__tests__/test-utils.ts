@@ -30,12 +30,12 @@ export function createMockResponse<T>(
       'Content-Type': 'application/json',
       ...headers,
     }),
-    json: async () => data,
-    text: async () => JSON.stringify(data),
-    blob: async () => new Blob([JSON.stringify(data)]),
-    arrayBuffer: async () => new ArrayBuffer(0),
-    formData: async () => new FormData(),
-    clone: function () {
+    json: async () => Promise.resolve(data),
+    text: async () => Promise.resolve(JSON.stringify(data)),
+    blob: async () => Promise.resolve(new Blob([JSON.stringify(data)])),
+    arrayBuffer: async () => Promise.resolve(new ArrayBuffer(0)),
+    formData: async () => Promise.resolve(new FormData()),
+    clone() {
       return this;
     },
   } as Response;
@@ -58,9 +58,7 @@ export function createMockFetchSequence(
 ): jest.Mock {
   const mockFetch = jest.fn();
   responses.forEach((response) => {
-    mockFetch.mockResolvedValueOnce(
-      createMockResponse(response.data, response.status ?? 200)
-    );
+    mockFetch.mockResolvedValueOnce(createMockResponse(response.data, response.status ?? 200));
   });
   return mockFetch;
 }
@@ -76,7 +74,7 @@ export function setupFetchMock(): void {
  * Restore fetch after tests
  */
 export function restoreFetch(): void {
-  if (global.fetch && jest.isMockFunction(global.fetch)) {
+  if (jest.isMockFunction(global.fetch)) {
     (global.fetch as jest.Mock).mockRestore();
   }
 }
@@ -84,13 +82,9 @@ export function restoreFetch(): void {
 /**
  * Helper to validate that an object matches a type structure
  */
-export function validateObjectStructure<T>(
-  obj: unknown,
-  expectedKeys: Array<keyof T>
-): obj is T {
+export function validateObjectStructure<T>(obj: unknown, expectedKeys: Array<keyof T>): obj is T {
   if (typeof obj !== 'object' || obj === null) {
     return false;
   }
   return expectedKeys.every((key) => key in obj);
 }
-

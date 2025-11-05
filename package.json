@@ -28,10 +28,11 @@
     "integration:run": "node integration-test.js",
     "integration": "yarn build && yarn integration:build && yarn integration:run",
     "lint": "yarn lint:eslint && yarn format:check",
-    "lint:eslint": "eslint src/**/*.ts",
-    "lint:fix": "eslint --fix src/**/*.ts && yarn format",
+    "lint:eslint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint --fix \"src/**/*.ts\" && yarn format",
     "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "precommit": "yarn lint:fix && yarn test"
   },
   "repository": {
     "type": "git",
