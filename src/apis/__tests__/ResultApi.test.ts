@@ -1,5 +1,5 @@
 import { ResultApi } from '../ResultApi';
-import { Result, ResultList, ResultResultEnum } from '../../models';
+import { type Result, type ResultList, ResultResultEnum } from '../../models';
 import { Configuration } from '../../runtime';
 import { createMockFetch, setupFetchMock, restoreFetch } from '../../__tests__/test-utils';
 
@@ -42,11 +42,15 @@ describe('ResultApi', () => {
       const result = await api.addResult({ result: newResult });
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost/api/result',
-        expect.objectContaining({
+        expect.objectContaining<Partial<FetchOptions>>({
           method: 'POST',
-          headers: expect.objectContaining({
+          headers: expect.objectContaining<Record<string, string>>({
             'Content-Type': 'application/json',
           }),
         })
@@ -68,8 +72,19 @@ describe('ResultApi', () => {
 
       await api.addResult({ result: newResult });
 
-      const callArgs = mockFetch.mock.calls[0];
-      const body = JSON.parse(callArgs[1].body);
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const bodyString = callArgs[1].body as string;
+      const body: {
+        test_id?: string;
+        start_time?: string;
+        run_id?: string;
+        project_id?: string;
+      } = JSON.parse(bodyString) as {
+        test_id?: string;
+        start_time?: string;
+        run_id?: string;
+        project_id?: string;
+      };
 
       expect(body).toHaveProperty('test_id', 'test-123');
       expect(body).toHaveProperty('start_time', '2024-01-01T00:00:00Z');
@@ -155,7 +170,10 @@ describe('ResultApi', () => {
     });
 
     it('should require id parameter', async () => {
-      await expect(api.getResult({ id: null as any })).rejects.toThrow();
+      await expect(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        api.getResult({ id: null as any })
+      ).rejects.toThrow();
     });
   });
 
@@ -201,9 +219,9 @@ describe('ResultApi', () => {
         pageSize: 100,
       });
 
-      const url = mockFetch.mock.calls[0][0];
-      expect(url).toContain('page=3');
-      expect(url).toContain('pageSize=100');
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(callArgs[0]).toContain('page=3');
+      expect(callArgs[0]).toContain('pageSize=100');
     });
 
     it('should handle filter parameters', async () => {
@@ -214,9 +232,9 @@ describe('ResultApi', () => {
         filter: ['result=passed', 'duration>10'],
       });
 
-      const url = mockFetch.mock.calls[0][0];
-      expect(url).toContain('filter=result%3Dpassed');
-      expect(url).toContain('filter=duration');
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(callArgs[0]).toContain('filter=result%3Dpassed');
+      expect(callArgs[0]).toContain('filter=duration');
     });
 
     it('should handle estimate parameter', async () => {
@@ -230,8 +248,8 @@ describe('ResultApi', () => {
         estimate: true,
       });
 
-      const url = mockFetch.mock.calls[0][0];
-      expect(url).toContain('estimate=true');
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(callArgs[0]).toContain('estimate=true');
     });
 
     it('should return empty list when no results exist', async () => {
@@ -273,11 +291,15 @@ describe('ResultApi', () => {
       });
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost/api/result/result-123',
-        expect.objectContaining({
+        expect.objectContaining<Partial<FetchOptions>>({
           method: 'PUT',
-          headers: expect.objectContaining({
+          headers: expect.objectContaining<Record<string, string>>({
             'Content-Type': 'application/json',
           }),
         })
@@ -333,6 +355,7 @@ describe('ResultApi', () => {
     it('should require id parameter', async () => {
       await expect(
         api.updateResult({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           id: null as any,
           result: {},
         })
@@ -346,16 +369,11 @@ describe('ResultApi', () => {
       global.fetch = mockFetch;
 
       await api.getResultList({
-        filter: [
-          'result=passed',
-          'duration>5',
-          'env=production',
-          'metadata.browser~chrome',
-        ],
+        filter: ['result=passed', 'duration>5', 'env=production', 'metadata.browser~chrome'],
       });
 
-      const url = mockFetch.mock.calls[0][0];
-      expect(url).toContain('filter=');
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(callArgs[0]).toContain('filter=');
       expect(mockFetch).toHaveBeenCalled();
     });
 
@@ -384,7 +402,8 @@ describe('ResultApi', () => {
 
       await authenticatedApi.getResultList({});
 
-      const headers = mockFetch.mock.calls[0][1].headers;
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const headers = callArgs[1].headers as Record<string, string>;
       expect(headers.Authorization).toBe('Bearer test-token-456');
     });
 
@@ -394,7 +413,8 @@ describe('ResultApi', () => {
 
       await api.getResultList({});
 
-      const headers = mockFetch.mock.calls[0][1].headers;
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const headers = callArgs[1].headers as Record<string, string>;
       expect(headers.Authorization).toBeUndefined();
     });
   });
@@ -418,7 +438,7 @@ describe('ResultApi', () => {
       mockFetch = jest.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: () => Promise.reject(new Error('Invalid JSON')),
+        json: async () => Promise.reject(new Error('Invalid JSON')),
       });
       global.fetch = mockFetch;
 
@@ -426,4 +446,3 @@ describe('ResultApi', () => {
     });
   });
 });
-

@@ -1,5 +1,5 @@
 import { ProjectApi } from '../ProjectApi';
-import { Project, ProjectList } from '../../models';
+import type { Project, ProjectList } from '../../models';
 import { Configuration } from '../../runtime';
 import { createMockFetch, setupFetchMock, restoreFetch } from '../../__tests__/test-utils';
 
@@ -37,11 +37,15 @@ describe('ProjectApi', () => {
       const result = await api.addProject({ project: newProject });
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost/api/project',
-        expect.objectContaining({
+        expect.objectContaining<Partial<FetchOptions>>({
           method: 'POST',
-          headers: expect.objectContaining({
+          headers: expect.objectContaining<Record<string, string>>({
             'Content-Type': 'application/json',
           }),
         })
@@ -63,8 +67,11 @@ describe('ProjectApi', () => {
 
       await api.addProject({ project: newProject });
 
-      const callArgs = mockFetch.mock.calls[0];
-      const body = JSON.parse(callArgs[1].body);
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const bodyString = callArgs[1].body as string;
+      const body: { name?: string; owner_id?: string; group_id?: string } = JSON.parse(
+        bodyString
+      ) as { name?: string; owner_id?: string; group_id?: string };
 
       expect(body).toHaveProperty('name', 'test-project');
       expect(body).toHaveProperty('owner_id', 'user-123');
@@ -111,7 +118,10 @@ describe('ProjectApi', () => {
 
     it('should require id parameter', async () => {
       // TypeScript should catch this, but testing runtime behavior
-      await expect(api.getProject({ id: null as any })).rejects.toThrow();
+      await expect(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        api.getProject({ id: null as any })
+      ).rejects.toThrow();
     });
   });
 
@@ -149,9 +159,9 @@ describe('ProjectApi', () => {
         pageSize: 50,
       });
 
-      const url = mockFetch.mock.calls[0][0];
-      expect(url).toContain('page=2');
-      expect(url).toContain('pageSize=50');
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(callArgs[0]).toContain('page=2');
+      expect(callArgs[0]).toContain('pageSize=50');
     });
 
     it('should handle filter parameters', async () => {
@@ -163,9 +173,9 @@ describe('ProjectApi', () => {
         ownerId: 'user-123',
       });
 
-      const url = mockFetch.mock.calls[0][0];
-      expect(url).toContain('filter=name%3Dtest');
-      expect(url).toContain('ownerId=user-123');
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(callArgs[0]).toContain('filter=name%3Dtest');
+      expect(callArgs[0]).toContain('ownerId=user-123');
     });
 
     it('should return empty list when no projects exist', async () => {
@@ -206,11 +216,15 @@ describe('ProjectApi', () => {
       });
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost/api/project/project-123',
-        expect.objectContaining({
+        expect.objectContaining<Partial<FetchOptions>>({
           method: 'PUT',
-          headers: expect.objectContaining({
+          headers: expect.objectContaining<Record<string, string>>({
             'Content-Type': 'application/json',
           }),
         })
@@ -242,6 +256,7 @@ describe('ProjectApi', () => {
     it('should require id parameter', async () => {
       await expect(
         api.updateProject({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           id: null as any,
           project: {},
         })
@@ -291,7 +306,8 @@ describe('ProjectApi', () => {
 
       await authenticatedApi.getProjectList({});
 
-      const headers = mockFetch.mock.calls[0][1].headers;
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const headers = callArgs[1].headers as Record<string, string>;
       expect(headers.Authorization).toBe('Bearer test-token-123');
     });
 
@@ -301,9 +317,9 @@ describe('ProjectApi', () => {
 
       await api.getProjectList({});
 
-      const headers = mockFetch.mock.calls[0][1].headers;
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const headers = callArgs[1].headers as Record<string, string>;
       expect(headers.Authorization).toBeUndefined();
     });
   });
 });
-

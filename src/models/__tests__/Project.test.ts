@@ -1,9 +1,4 @@
-import {
-  Project,
-  ProjectFromJSON,
-  ProjectToJSON,
-  instanceOfProject,
-} from '../Project';
+import { type Project, ProjectFromJSON, ProjectToJSON, instanceOfProject } from '../Project';
 
 describe('Project Model', () => {
   describe('interface and types', () => {
@@ -104,7 +99,19 @@ describe('Project Model', () => {
         groupId: 'group-789',
       };
 
-      const json = ProjectToJSON(project);
+      const json: {
+        id?: string;
+        name?: string;
+        title?: string;
+        owner_id?: string;
+        group_id?: string;
+      } = ProjectToJSON(project) as {
+        id?: string;
+        name?: string;
+        title?: string;
+        owner_id?: string;
+        group_id?: string;
+      };
 
       expect(json.id).toBe('project-123');
       expect(json.name).toBe('my-project');
@@ -118,19 +125,22 @@ describe('Project Model', () => {
         name: 'my-project',
       };
 
-      const json = ProjectToJSON(project);
+      const json: { name?: string; id?: string } = ProjectToJSON(project) as {
+        name?: string;
+        id?: string;
+      };
 
       expect(json.name).toBe('my-project');
       expect(json.id).toBeUndefined();
     });
 
     it('should return null when passed null', () => {
-      const json = ProjectToJSON(null);
+      const json: unknown = ProjectToJSON(null);
       expect(json).toBeNull();
     });
 
     it('should return undefined when passed undefined', () => {
-      const json = ProjectToJSON(undefined);
+      const json: unknown = ProjectToJSON(undefined);
       expect(json).toBeUndefined();
     });
   });
@@ -158,8 +168,8 @@ describe('Project Model', () => {
         groupId: 'group-789',
       };
 
-      const json = ProjectToJSON(original);
-      const restored = ProjectFromJSON(json);
+      const json: unknown = ProjectToJSON(original);
+      const restored: Project = ProjectFromJSON(json);
 
       expect(restored).toEqual(original);
     });
@@ -169,11 +179,10 @@ describe('Project Model', () => {
         name: 'minimal-project',
       };
 
-      const json = ProjectToJSON(original);
-      const restored = ProjectFromJSON(json);
+      const json: unknown = ProjectToJSON(original);
+      const restored: Project = ProjectFromJSON(json);
 
       expect(restored.name).toBe(original.name);
     });
   });
 });
-
