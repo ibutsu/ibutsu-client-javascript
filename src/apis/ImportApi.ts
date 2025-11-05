@@ -12,6 +12,7 @@
  */
 
 import * as runtime from '../runtime';
+import { objectToJSON } from '../runtime';
 import type { Import } from '../models/index';
 import { ImportFromJSON, ImportToJSON } from '../models/index';
 

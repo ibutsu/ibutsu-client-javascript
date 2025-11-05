@@ -23,7 +23,7 @@
     "prepack": "yarn build",
     "test": "jest",
     "integration:build": "tsc -p tsconfig.integration.json",
-    "integration:run": "node dist/integration/integration-test.js",
+    "integration:run": "node integration-test.js",
     "integration": "yarn build && yarn integration:build && yarn integration:run",
     "lint": "yarn lint:eslint && yarn format:check",
     "lint:eslint": "eslint src/**/*.ts",
@@ -42,9 +42,7 @@
     "api-client",
     "typescript"
   ],
-  "dependencies": {
-    "portable-fetch": "^3.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^9.16.0",
     "@types/node": "^24.10.0",

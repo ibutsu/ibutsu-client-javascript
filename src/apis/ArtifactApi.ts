@@ -12,6 +12,7 @@
  */
 
 import * as runtime from '../runtime';
+import { objectToJSON } from '../runtime';
 import type { Artifact, ArtifactList } from '../models/index';
 import {
   ArtifactFromJSON,
