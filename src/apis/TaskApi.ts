@@ -1,5 +1,3 @@
-/* tslint:disable */
-
 /**
  * Ibutsu API
  * A system to store and query test results
@@ -69,7 +67,7 @@ export class TaskApi extends runtime.BaseAPI implements TaskApiInterface {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    if (this.configuration && this.configuration.accessToken) {
+    if (this.configuration?.accessToken) {
       const token = this.configuration.accessToken;
       const tokenString = await token('jwt', []);
 
@@ -102,6 +100,6 @@ export class TaskApi extends runtime.BaseAPI implements TaskApiInterface {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<object> {
     const response = await this.getTaskRaw(requestParameters, initOverrides);
-    return await response.value();
+    return response.value();
   }
 }
