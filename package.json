@@ -3,20 +3,28 @@
   "version": "1.0.1",
   "description": "A TypeScript client for the Ibutsu API",
   "license": "MIT",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/cjs/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     }
   },
   "scripts": {
     "build": "tsc && tsc -p tsconfig.esm.json",
     "prepack": "yarn build",
     "test": "jest",
+    "integration:build": "tsc -p tsconfig.integration.json",
+    "integration:run": "node dist/integration/integration-test.js",
+    "integration": "yarn build && yarn integration:build && yarn integration:run",
     "lint": "yarn lint:eslint && yarn format:check",
     "lint:eslint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts && yarn format",
