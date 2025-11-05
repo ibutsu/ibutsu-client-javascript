@@ -48,11 +48,17 @@ get_versions() {
 
 # Check dependencies
 function check_dependencies() {
-    if ! command -v podman >/dev/null 2>&1; then
-        echo "Error: Podman is required for consistent OpenAPI generation"
+    if command -v podman >/dev/null 2>&1; then
+        CONTAINER_CMD="podman"
+    elif command -v docker >/dev/null 2>&1; then
+        CONTAINER_CMD="docker"
+    else
+        echo "Error: Either Podman or Docker is required for consistent OpenAPI generation"
         echo "Please install Podman from https://podman.io/getting-started/installation"
+        echo "Or install Docker from https://docs.docker.com/get-docker/"
         exit 1
     fi
+    echo "Using container runtime: ${CONTAINER_CMD}"
 }
 
 function print_usage() {
@@ -67,7 +73,7 @@ function print_usage() {
     echo "uncommitted changes in the working tree after running formatting."
     echo ""
     echo "Requirements:"
-    echo "  - Podman (for consistent OpenAPI generation)"
+    echo "  - Podman or Docker (for consistent OpenAPI generation)"
     echo "  - Node.js (required for version management)"
 }
 
@@ -123,11 +129,11 @@ if [[ ! $OPENAPI_FILE == http* ]] && [[ ! -f "$OPENAPI_FILE" ]]; then
     exit 1
 fi
 
-# Generate the client using Podman
+# Generate the client using container runtime
 echo "Generating client with OpenAPI Generator v${OPENAPI_GENERATOR_VERSION}..."
 mkdir -p "$(dirname "${TEMP_DIR}")"
 
-podman run --rm \
+${CONTAINER_CMD} run --rm \
     -v "${CLIENT_DIR}:/local:Z" \
     "openapitools/openapi-generator-cli:v${OPENAPI_GENERATOR_VERSION}" \
     generate \
@@ -135,7 +141,7 @@ podman run --rm \
     -g typescript-fetch \
     -o "/local/tmp/client" \
     --global-property skipFormModel=true \
-    -p npmName=@ibutsu/client \
+    -p npmName=ibutsu-client-ts \
     -p npmVersion="${NEW_VERSION}" \
     -p npmRepository=https://github.com/ibutsu/ibutsu-client-javascript \
     -p supportsES6=true \

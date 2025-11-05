@@ -25,6 +25,9 @@ tmp/
 temp/
 *.tmp
 
+# OpenAPI Generator
+.openapi-generator/
+
 # IDE
 .vscode/
 .idea/
