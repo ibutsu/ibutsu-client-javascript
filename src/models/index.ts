@@ -1,5 +1,3 @@
-/* tslint:disable */
-
 export * from './AccountRecovery';
 export * from './AccountRegistration';
 export * from './AccountReset';
