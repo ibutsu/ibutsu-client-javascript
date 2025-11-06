@@ -1,22 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { ProjectApi } from '../ProjectApi';
 import type { Project, ProjectList } from '../../models';
 import { Configuration } from '../../runtime';
-import { createMockFetch, setupFetchMock, restoreFetch } from '../../__tests__/test-utils';
+import { createMockFetch } from '../../__tests__/test-utils';
 
 describe('ProjectApi', () => {
   let api: ProjectApi;
   let mockFetch: jest.Mock;
 
   beforeEach(() => {
-    setupFetchMock();
     const config = new Configuration({
       basePath: 'http://localhost/api',
     });
     api = new ProjectApi(config);
-  });
-
-  afterEach(() => {
-    restoreFetch();
   });
 
   describe('addProject', () => {
@@ -307,8 +304,8 @@ describe('ProjectApi', () => {
       await authenticatedApi.getProjectList({});
 
       const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
-      const headers = callArgs[1].headers as Record<string, string>;
-      expect(headers.Authorization).toBe('Bearer test-token-123');
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-123');
     });
 
     it('should work without authentication when not configured', async () => {
@@ -318,8 +315,77 @@ describe('ProjectApi', () => {
       await api.getProjectList({});
 
       const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
-      const headers = callArgs[1].headers as Record<string, string>;
-      expect(headers.Authorization).toBeUndefined();
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBeUndefined();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle 401 Unauthorized errors', async () => {
+      mockFetch = createMockFetch({ error: 'Unauthorized' }, 401);
+      global.fetch = mockFetch;
+
+      await expect(api.getProjectList({})).rejects.toThrow();
+    });
+
+    it('should handle 403 Forbidden errors', async () => {
+      mockFetch = createMockFetch({ error: 'Forbidden' }, 403);
+      global.fetch = mockFetch;
+
+      await expect(api.getProject({ id: 'project-123' })).rejects.toThrow();
+    });
+
+    it('should handle 500 Internal Server Error', async () => {
+      mockFetch = createMockFetch({ error: 'Internal Server Error' }, 500);
+      global.fetch = mockFetch;
+
+      await expect(api.addProject({ project: { name: 'test' } })).rejects.toThrow();
+    });
+
+    it('should handle 503 Service Unavailable', async () => {
+      mockFetch = createMockFetch({ error: 'Service Unavailable' }, 503);
+      global.fetch = mockFetch;
+
+      await expect(api.updateProject({ id: 'proj-1', project: {} })).rejects.toThrow();
+    });
+
+    it('should handle network errors', async () => {
+      mockFetch = jest.fn().mockRejectedValue(new Error('Network error'));
+      global.fetch = mockFetch;
+
+      // Network errors are wrapped in a FetchError by the runtime
+      await expect(api.getProjectList({})).rejects.toThrow();
+    });
+
+    it('should handle malformed JSON responses', async () => {
+      mockFetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => Promise.reject(new Error('Invalid JSON')),
+      });
+      global.fetch = mockFetch;
+
+      await expect(api.getProjectList({})).rejects.toThrow();
+    });
+
+    it('should handle empty response body for non-2xx status', async () => {
+      mockFetch = createMockFetch(null, 400);
+      global.fetch = mockFetch;
+
+      await expect(api.addProject({ project: {} })).rejects.toThrow();
+    });
+
+    it('should handle malformed error responses', async () => {
+      mockFetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        json: async () => Promise.resolve('not an object'),
+        text: async () => Promise.resolve('not an object'),
+      });
+      global.fetch = mockFetch;
+
+      await expect(api.getProject({ id: 'bad-id' })).rejects.toThrow();
     });
   });
 });
