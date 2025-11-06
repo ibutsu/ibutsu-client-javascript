@@ -19,10 +19,11 @@ export function createMockConfiguration(overrides?: Partial<Configuration>): Con
  */
 export function createMockResponse<T>(
   data: T,
+  // eslint-disable-next-line @typescript-eslint/typedef
   status = 200,
   headers: Record<string, string> = {}
 ): Response {
-  const response = {
+  return {
     ok: status >= 200 && status < 300,
     status,
     statusText: status === 200 ? 'OK' : 'Error',
@@ -36,17 +37,19 @@ export function createMockResponse<T>(
     arrayBuffer: async () => Promise.resolve(new ArrayBuffer(0)),
     formData: async () => Promise.resolve(new FormData()),
     clone() {
-      return this;
+      return createMockResponse(data, status, headers);
     },
   } as Response;
-
-  return response;
 }
 
 /**
  * Create a mock fetch function that returns a specific response
  */
-export function createMockFetch<T>(data: T, status = 200): jest.Mock {
+export function createMockFetch<T>(
+  data: T,
+  // eslint-disable-next-line @typescript-eslint/typedef
+  status = 200
+): jest.Mock {
   return jest.fn().mockResolvedValue(createMockResponse(data, status));
 }
 

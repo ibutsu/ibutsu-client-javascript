@@ -1,22 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { ResultApi } from '../ResultApi';
 import { type Result, type ResultList, ResultResultEnum } from '../../models';
 import { Configuration } from '../../runtime';
-import { createMockFetch, setupFetchMock, restoreFetch } from '../../__tests__/test-utils';
+import { createMockFetch } from '../../__tests__/test-utils';
 
 describe('ResultApi', () => {
   let api: ResultApi;
   let mockFetch: jest.Mock;
 
   beforeEach(() => {
-    setupFetchMock();
     const config = new Configuration({
       basePath: 'http://localhost/api',
     });
     api = new ResultApi(config);
-  });
-
-  afterEach(() => {
-    restoreFetch();
   });
 
   describe('addResult', () => {
@@ -403,8 +400,8 @@ describe('ResultApi', () => {
       await authenticatedApi.getResultList({});
 
       const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
-      const headers = callArgs[1].headers as Record<string, string>;
-      expect(headers.Authorization).toBe('Bearer test-token-456');
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-456');
     });
 
     it('should work without authentication when not configured', async () => {
@@ -414,27 +411,71 @@ describe('ResultApi', () => {
       await api.getResultList({});
 
       const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
-      const headers = callArgs[1].headers as Record<string, string>;
-      expect(headers.Authorization).toBeUndefined();
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBeUndefined();
     });
   });
 
   describe('error handling', () => {
-    it('should handle server errors', async () => {
+    it('should handle 400 Bad Request errors', async () => {
+      mockFetch = createMockFetch({ error: 'Bad Request' }, 400);
+      global.fetch = mockFetch;
+
+      await expect(api.addResult({ result: {} })).rejects.toThrow();
+    });
+
+    it('should handle 401 Unauthorized errors', async () => {
+      mockFetch = createMockFetch({ error: 'Unauthorized' }, 401);
+      global.fetch = mockFetch;
+
+      await expect(api.getResultList({})).rejects.toThrow();
+    });
+
+    it('should handle 403 Forbidden errors', async () => {
+      mockFetch = createMockFetch({ error: 'Forbidden' }, 403);
+      global.fetch = mockFetch;
+
+      await expect(api.getResult({ id: 'result-123' })).rejects.toThrow();
+    });
+
+    it('should handle 500 Internal Server Error', async () => {
       mockFetch = createMockFetch({ error: 'Internal Server Error' }, 500);
       global.fetch = mockFetch;
 
       await expect(api.getResultList({})).rejects.toThrow();
     });
 
+    it('should handle 502 Bad Gateway errors', async () => {
+      mockFetch = createMockFetch({ error: 'Bad Gateway' }, 502);
+      global.fetch = mockFetch;
+
+      await expect(api.updateResult({ id: 'result-1', result: {} })).rejects.toThrow();
+    });
+
+    it('should handle 503 Service Unavailable', async () => {
+      mockFetch = createMockFetch({ error: 'Service Unavailable' }, 503);
+      global.fetch = mockFetch;
+
+      await expect(api.addResult({ result: {} })).rejects.toThrow();
+    });
+
     it('should handle network errors', async () => {
       mockFetch = jest.fn().mockRejectedValue(new Error('Network error'));
       global.fetch = mockFetch;
 
+      // Network errors are wrapped in a FetchError by the runtime
       await expect(api.getResultList({})).rejects.toThrow();
     });
 
-    it('should handle malformed responses', async () => {
+    it('should handle timeout errors', async () => {
+      mockFetch = jest.fn().mockRejectedValue(new Error('Request timeout'));
+      global.fetch = mockFetch;
+
+      // Timeout errors are wrapped in a FetchError by the runtime
+      await expect(api.getResult({ id: 'result-123' })).rejects.toThrow();
+    });
+
+    it('should handle malformed JSON responses', async () => {
       mockFetch = jest.fn().mockResolvedValue({
         ok: true,
         status: 200,
@@ -443,6 +484,36 @@ describe('ResultApi', () => {
       global.fetch = mockFetch;
 
       await expect(api.getResultList({})).rejects.toThrow();
+    });
+
+    it('should handle empty response body for non-2xx status', async () => {
+      mockFetch = createMockFetch(null, 404);
+      global.fetch = mockFetch;
+
+      await expect(api.getResult({ id: 'missing' })).rejects.toThrow();
+    });
+
+    it('should handle malformed error responses', async () => {
+      mockFetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        json: async () => Promise.resolve('not an object'),
+        text: async () => Promise.resolve('not an object'),
+      });
+      global.fetch = mockFetch;
+
+      await expect(api.addResult({ result: {} })).rejects.toThrow();
+    });
+
+    it('should handle responses with missing required fields', async () => {
+      mockFetch = createMockFetch({ incomplete: 'data' });
+      global.fetch = mockFetch;
+
+      // The API should still return the response even if fields are missing
+      // The validation happens at the application level
+      const result = await api.getResult({ id: 'result-123' });
+      expect(result).toBeDefined();
     });
   });
 });
