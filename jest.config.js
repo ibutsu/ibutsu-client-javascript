@@ -1,10 +1,17 @@
+const { defaults: tsjPreset } = require('ts-jest/presets');
+
 /** @type {import('jest').Config} */
 module.exports = {
-  preset: 'ts-jest',
+  // Spread ts-jest preset defaults (includes transform, moduleFileExtensions, testMatch, etc.)
+  ...tsjPreset,
+
+  // Override only what we need
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   roots: ['<rootDir>/src'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testMatch: ['**/__tests__/**/*.test.ts', '**/*.test.ts', '**/*.spec.ts'],
+
+  // Coverage configuration
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
@@ -13,8 +20,6 @@ module.exports = {
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
   ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'text-summary', 'lcov', 'html', 'json'],
   coverageThreshold: {
     global: {
       branches: 15,
@@ -23,20 +28,11 @@ module.exports = {
       statements: 25,
     },
   },
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/__tests__/',
-    '/dist/',
-    '.test.ts$',
-    '.spec.ts$',
-  ],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+
+  // Custom flags that differ from ts-jest defaults
   verbose: true,
   testTimeout: 10000,
   errorOnDeprecated: true,
-  bail: false,
-  maxWorkers: '50%',
   clearMocks: true,
-  resetMocks: false,
-  restoreMocks: false,
+  maxWorkers: '50%',
 };

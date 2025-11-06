@@ -204,6 +204,7 @@ export default tseslint.config(
   // Special rules for auto-generated code
   {
     files: ['src/apis/**/*.ts', 'src/models/**/*.ts', 'src/runtime.ts'],
+    // Note: 'ignores' is the correct field for ESLint flat config (not 'excludedFiles')
     ignores: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
     rules: {
       // Relax some strict rules for auto-generated OpenAPI code
@@ -223,46 +224,19 @@ export default tseslint.config(
       '@typescript-eslint/prefer-optional-chain': 'off',
     },
   },
-  // Strict rules for test files
+  // Rules for test files
+  // Most strict rules are inherited from base config; only override what differs for tests
   {
     files: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
     rules: {
-      // Enforce explicit types in tests
-      '@typescript-eslint/explicit-function-return-type': 'off', // Allow inference for test callbacks
-      '@typescript-eslint/explicit-module-boundary-types': 'off', // Allow inference for test functions
-
-      // Maintain type safety in tests
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unsafe-argument': 'error',
-      '@typescript-eslint/no-unsafe-assignment': 'error',
-      '@typescript-eslint/no-unsafe-call': 'error',
-      '@typescript-eslint/no-unsafe-member-access': 'error',
-      '@typescript-eslint/no-unsafe-return': 'error',
+      // Allow type inference in test callbacks and helper functions
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
 
       // Allow common test patterns
       '@typescript-eslint/unbound-method': 'off', // Jest mocks often trigger this
       '@typescript-eslint/no-non-null-assertion': 'warn', // Sometimes needed in tests, but warn
-
-      // Enforce good test practices
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-
-      // Code quality in tests
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-
-      // Best practices
       'no-console': 'off', // Allow console in tests for debugging
-      'prefer-const': 'error',
-      'no-var': 'error',
     },
   },
   // Prettier must be last to override any conflicting formatting rules
