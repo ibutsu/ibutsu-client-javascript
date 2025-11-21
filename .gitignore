@@ -21,6 +21,7 @@ generate.log
 
 # Testing
 coverage/
+coverage-output.txt
 .nyc_output/
 
 # Temporary files

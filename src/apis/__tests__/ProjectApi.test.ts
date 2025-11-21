@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { ProjectApi } from '../ProjectApi';
 import type { Project, ProjectList } from '../../models';
 import { Configuration } from '../../runtime';
