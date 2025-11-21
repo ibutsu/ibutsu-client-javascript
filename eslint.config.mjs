@@ -233,9 +233,18 @@ export default tseslint.config(
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
 
+      // Relax type safety rules for test mocking and dynamic test data
+      '@typescript-eslint/no-unsafe-assignment': 'off', // Mock responses often use any
+      '@typescript-eslint/no-unsafe-member-access': 'off', // Accessing mock object properties
+      '@typescript-eslint/no-unsafe-call': 'off', // Calling mocked functions
+      '@typescript-eslint/no-unsafe-argument': 'off', // Passing mock data to functions
+      '@typescript-eslint/no-explicit-any': 'warn', // Warn but allow any in tests
+
       // Allow common test patterns
       '@typescript-eslint/unbound-method': 'off', // Jest mocks often trigger this
       '@typescript-eslint/no-non-null-assertion': 'warn', // Sometimes needed in tests, but warn
+      '@typescript-eslint/require-await': 'off', // Mock async functions often don't need await
+      '@typescript-eslint/no-unnecessary-condition': 'off', // Test assertions may check conditions
       'no-console': 'off', // Allow console in tests for debugging
     },
   },

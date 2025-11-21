@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { ResultApi } from '../ResultApi';
 import { type Result, type ResultList, ResultResultEnum } from '../../models';
 import { Configuration } from '../../runtime';
