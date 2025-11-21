@@ -394,7 +394,7 @@ describe('RunApi', () => {
   });
 
   describe('authentication', () => {
-    it('should include Bearer token when configured', async () => {
+    it('should include Bearer token when configured for getRun', async () => {
       const config = new Configuration({
         basePath: 'http://localhost/api',
         accessToken: async () => 'test-token-123',
@@ -421,6 +421,86 @@ describe('RunApi', () => {
         expect.objectContaining<Partial<FetchOptions>>({
           headers: expect.objectContaining<Record<string, string>>({
             Authorization: 'Bearer test-token-123',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for addRun', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-add',
+      });
+      api = new RunApi(config);
+
+      const newRun: Run = { metadata: { project: 'test' } };
+      mockFetch = createMockFetch({ id: 'run-123', ...newRun }, 201);
+      global.fetch = mockFetch;
+
+      await api.addRun({ run: newRun });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-add',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for getRunList', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-list',
+      });
+      api = new RunApi(config);
+
+      mockFetch = createMockFetch({ runs: [] });
+      global.fetch = mockFetch;
+
+      await api.getRunList({});
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-list',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for updateRun', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-update',
+      });
+      api = new RunApi(config);
+
+      const updatedRun = { summary: { passed: 10 } };
+      mockFetch = createMockFetch({ id: 'run-123', ...updatedRun });
+      global.fetch = mockFetch;
+
+      await api.updateRun({ id: 'run-123', run: updatedRun });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-update',
           }),
         })
       );

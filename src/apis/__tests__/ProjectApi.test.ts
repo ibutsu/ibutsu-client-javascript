@@ -289,7 +289,7 @@ describe('ProjectApi', () => {
   });
 
   describe('authentication', () => {
-    it('should include Bearer token when configured', async () => {
+    it('should include Bearer token when configured for getProjectList', async () => {
       const configWithAuth = new Configuration({
         basePath: 'http://localhost/api',
         accessToken: 'test-token-123',
@@ -304,6 +304,82 @@ describe('ProjectApi', () => {
       const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
       const { headers } = callArgs[1];
       expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-123');
+    });
+
+    it('should include Bearer token when configured for addProject', async () => {
+      const configWithAuth = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: 'test-token-add',
+      });
+      const authenticatedApi = new ProjectApi(configWithAuth);
+
+      const newProject: Project = {
+        name: 'test-project',
+      };
+
+      mockFetch = createMockFetch({ id: 'project-123', ...newProject }, 201);
+      global.fetch = mockFetch;
+
+      await authenticatedApi.addProject({ project: newProject });
+
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-add');
+    });
+
+    it('should include Bearer token when configured for getProject', async () => {
+      const configWithAuth = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: 'test-token-get',
+      });
+      const authenticatedApi = new ProjectApi(configWithAuth);
+
+      mockFetch = createMockFetch({ id: 'project-123', name: 'test' });
+      global.fetch = mockFetch;
+
+      await authenticatedApi.getProject({ id: 'project-123' });
+
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-get');
+    });
+
+    it('should include Bearer token when configured for updateProject', async () => {
+      const configWithAuth = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: 'test-token-update',
+      });
+      const authenticatedApi = new ProjectApi(configWithAuth);
+
+      const updatedProject: Project = {
+        name: 'updated-project',
+      };
+
+      mockFetch = createMockFetch({ id: 'project-123', ...updatedProject });
+      global.fetch = mockFetch;
+
+      await authenticatedApi.updateProject({ id: 'project-123', project: updatedProject });
+
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-update');
+    });
+
+    it('should include Bearer token when configured for getFilterParams', async () => {
+      const configWithAuth = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: 'test-token-filter',
+      });
+      const authenticatedApi = new ProjectApi(configWithAuth);
+
+      mockFetch = createMockFetch(['param1', 'param2']);
+      global.fetch = mockFetch;
+
+      await authenticatedApi.getFilterParams({ id: 'project-123' });
+
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-filter');
     });
 
     it('should work without authentication when not configured', async () => {

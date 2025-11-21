@@ -45,6 +45,26 @@ describe('ArtifactApi', () => {
       expect(result.filename).toBe(filename);
     });
 
+    it('should require filename parameter', async () => {
+      const fileBlob = new Blob(['data'], { type: 'text/plain' });
+
+      await expect(
+        api.uploadArtifact({
+          filename: null as unknown as string,
+          file: fileBlob,
+        })
+      ).rejects.toThrow();
+    });
+
+    it('should require file parameter', async () => {
+      await expect(
+        api.uploadArtifact({
+          filename: 'test.txt',
+          file: null as unknown as Blob,
+        })
+      ).rejects.toThrow();
+    });
+
     it('should attach artifact to a result', async () => {
       const fileBlob = new Blob(['data'], { type: 'text/plain' });
       const resultId = '123e4567-e89b-12d3-a456-426614174001';
@@ -405,7 +425,7 @@ describe('ArtifactApi', () => {
   });
 
   describe('authentication', () => {
-    it('should include Bearer token when configured', async () => {
+    it('should include Bearer token when configured for getArtifact', async () => {
       const config = new Configuration({
         basePath: 'http://localhost/api',
         accessToken: async () => 'test-token-456',
@@ -432,6 +452,168 @@ describe('ArtifactApi', () => {
         expect.objectContaining<Partial<FetchOptions>>({
           headers: expect.objectContaining<Record<string, string>>({
             Authorization: 'Bearer test-token-456',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for uploadArtifact', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-upload',
+      });
+      api = new ArtifactApi(config);
+
+      const fileBlob = new Blob(['data'], { type: 'text/plain' });
+      const responseArtifact: Artifact = {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        filename: 'test.txt',
+      };
+
+      mockFetch = createMockFetch(responseArtifact, 201);
+      global.fetch = mockFetch;
+
+      await api.uploadArtifact({
+        filename: 'test.txt',
+        file: fileBlob,
+      });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-upload',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for getArtifactList', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-list',
+      });
+      api = new ArtifactApi(config);
+
+      const mockArtifactList: ArtifactList = {
+        artifacts: [],
+        pagination: {
+          page: 1,
+          pageSize: 25,
+          totalItems: 0,
+          totalPages: 0,
+        },
+      };
+
+      mockFetch = createMockFetch(mockArtifactList);
+      global.fetch = mockFetch;
+
+      await api.getArtifactList({});
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-list',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for deleteArtifact', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-delete',
+      });
+      api = new ArtifactApi(config);
+
+      mockFetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 204,
+      });
+      global.fetch = mockFetch;
+
+      await api.deleteArtifact({ id: '123e4567-e89b-12d3-a456-426614174000' });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-delete',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for downloadArtifact', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-download',
+      });
+      api = new ArtifactApi(config);
+
+      const mockBlob = new Blob(['file content'], { type: 'text/plain' });
+      mockFetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: async () => mockBlob,
+      });
+      global.fetch = mockFetch;
+
+      await api.downloadArtifact({ id: '123e4567-e89b-12d3-a456-426614174000' });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-download',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for viewArtifact', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-view',
+      });
+      api = new ArtifactApi(config);
+
+      const mockBlob = new Blob(['<html>content</html>'], { type: 'text/html' });
+      mockFetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: async () => mockBlob,
+      });
+      global.fetch = mockFetch;
+
+      await api.viewArtifact({ id: '123e4567-e89b-12d3-a456-426614174000' });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-view',
           }),
         })
       );

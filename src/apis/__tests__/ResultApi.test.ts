@@ -385,7 +385,7 @@ describe('ResultApi', () => {
   });
 
   describe('authentication', () => {
-    it('should include Bearer token when configured', async () => {
+    it('should include Bearer token when configured for getResultList', async () => {
       const configWithAuth = new Configuration({
         basePath: 'http://localhost/api',
         accessToken: 'test-token-456',
@@ -400,6 +400,59 @@ describe('ResultApi', () => {
       const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
       const { headers } = callArgs[1];
       expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-456');
+    });
+
+    it('should include Bearer token when configured for addResult', async () => {
+      const configWithAuth = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: 'test-token-add',
+      });
+      const authenticatedApi = new ResultApi(configWithAuth);
+
+      const newResult = { metadata: { test: 'value' } };
+      mockFetch = createMockFetch({ id: 'result-123', ...newResult }, 201);
+      global.fetch = mockFetch;
+
+      await authenticatedApi.addResult({ result: newResult });
+
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-add');
+    });
+
+    it('should include Bearer token when configured for getResult', async () => {
+      const configWithAuth = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: 'test-token-get',
+      });
+      const authenticatedApi = new ResultApi(configWithAuth);
+
+      mockFetch = createMockFetch({ id: 'result-123' });
+      global.fetch = mockFetch;
+
+      await authenticatedApi.getResult({ id: 'result-123' });
+
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-get');
+    });
+
+    it('should include Bearer token when configured for updateResult', async () => {
+      const configWithAuth = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: 'test-token-update',
+      });
+      const authenticatedApi = new ResultApi(configWithAuth);
+
+      const updatedResult = { metadata: { updated: 'value' } };
+      mockFetch = createMockFetch({ id: 'result-123', ...updatedResult });
+      global.fetch = mockFetch;
+
+      await authenticatedApi.updateResult({ id: 'result-123', result: updatedResult });
+
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit];
+      const { headers } = callArgs[1];
+      expect((headers as Record<string, string>).Authorization).toBe('Bearer test-token-update');
     });
 
     it('should work without authentication when not configured', async () => {
