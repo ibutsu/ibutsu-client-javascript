@@ -283,7 +283,7 @@ describe('GroupApi', () => {
   });
 
   describe('authentication', () => {
-    it('should include Bearer token when configured', async () => {
+    it('should include Bearer token when configured for getGroup', async () => {
       const config = new Configuration({
         basePath: 'http://localhost/api',
         accessToken: async () => 'test-token-abc',
@@ -310,6 +310,92 @@ describe('GroupApi', () => {
         expect.objectContaining<Partial<FetchOptions>>({
           headers: expect.objectContaining<Record<string, string>>({
             Authorization: 'Bearer test-token-abc',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for addGroup', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-add',
+      });
+      api = new GroupApi(config);
+
+      const newGroup: Group = {
+        name: 'new-group',
+      };
+
+      mockFetch = createMockFetch({ id: 'group-123', ...newGroup }, 201);
+      global.fetch = mockFetch;
+
+      await api.addGroup({ group: newGroup });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-add',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for getGroupList', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-list',
+      });
+      api = new GroupApi(config);
+
+      mockFetch = createMockFetch({ groups: [] });
+      global.fetch = mockFetch;
+
+      await api.getGroupList({});
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-list',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for updateGroup', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-update',
+      });
+      api = new GroupApi(config);
+
+      const updatedGroup: Group = {
+        name: 'updated-group',
+      };
+
+      mockFetch = createMockFetch({ id: 'group-123', ...updatedGroup });
+      global.fetch = mockFetch;
+
+      await api.updateGroup({ id: 'group-123', group: updatedGroup });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-update',
           }),
         })
       );

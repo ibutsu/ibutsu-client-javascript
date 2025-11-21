@@ -328,7 +328,7 @@ describe('DashboardApi', () => {
   });
 
   describe('authentication', () => {
-    it('should include Bearer token when configured', async () => {
+    it('should include Bearer token when configured for getDashboard', async () => {
       const config = new Configuration({
         basePath: 'http://localhost/api',
         accessToken: async () => 'test-token-dashboard',
@@ -355,6 +355,92 @@ describe('DashboardApi', () => {
         expect.objectContaining<Partial<FetchOptions>>({
           headers: expect.objectContaining<Record<string, string>>({
             Authorization: 'Bearer test-token-dashboard',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for addDashboard', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-add',
+      });
+      api = new DashboardApi(config);
+
+      const newDashboard: Dashboard = {
+        title: 'New Dashboard',
+      };
+
+      mockFetch = createMockFetch({ id: 'dashboard-123', ...newDashboard }, 201);
+      global.fetch = mockFetch;
+
+      await api.addDashboard({ dashboard: newDashboard });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-add',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for getDashboardList', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-list',
+      });
+      api = new DashboardApi(config);
+
+      mockFetch = createMockFetch({ dashboards: [] });
+      global.fetch = mockFetch;
+
+      await api.getDashboardList({});
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-list',
+          }),
+        })
+      );
+    });
+
+    it('should include Bearer token when configured for updateDashboard', async () => {
+      const config = new Configuration({
+        basePath: 'http://localhost/api',
+        accessToken: async () => 'test-token-update',
+      });
+      api = new DashboardApi(config);
+
+      const updatedDashboard: Dashboard = {
+        title: 'Updated Dashboard',
+      };
+
+      mockFetch = createMockFetch({ id: 'dashboard-123', ...updatedDashboard });
+      global.fetch = mockFetch;
+
+      await api.updateDashboard({ id: 'dashboard-123', dashboard: updatedDashboard });
+
+      interface FetchOptions {
+        method: string;
+        headers: Record<string, string>;
+      }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining<Partial<FetchOptions>>({
+          headers: expect.objectContaining<Record<string, string>>({
+            Authorization: 'Bearer test-token-update',
           }),
         })
       );
